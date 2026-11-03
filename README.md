@@ -108,7 +108,7 @@ También podés cambiar tu **foto de perfil** desde **Ajustes**: tocá el avatar
 **Requisitos:** JDK 17, Android SDK 34 y build-tools 35.
 
 ```bash
-git clone https://github.com/Manolodios/rutascan.git
+git clone https://github.com/Manolodios/larptok.git
 cd rutascan
 git checkout larptok
 cd android
