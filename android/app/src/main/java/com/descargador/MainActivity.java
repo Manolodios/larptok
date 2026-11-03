@@ -34,6 +34,8 @@ import androidx.appcompat.app.AppCompatActivity;
 import java.io.InputStream;
 import java.util.Locale;
 
+import com.chaquo.python.Python;
+
 public class MainActivity extends AppCompatActivity {
 
     private static final int TAB_HOME = 0;
@@ -265,6 +267,13 @@ public class MainActivity extends AppCompatActivity {
             } else {
                 tvEstado.setText("Estado: cargando...");
             }
+            String bestUrl = getBestQualityUrl(url);
+            if (!bestUrl.isEmpty() && !bestUrl.equals(url)) {
+                startDownload(bestUrl, null, null, null);
+                markHistoryPending();
+                requestLegacyStoragePermission();
+                return;
+            }
             webView.loadUrl(url);
             markHistoryPending();
             requestLegacyStoragePermission();
@@ -344,6 +353,15 @@ public class MainActivity extends AppCompatActivity {
                 || lower.contains(".jpeg")
                 || lower.contains(".png")
                 || lower.contains(".webp");
+    }
+
+    private String getBestQualityUrl(String url) {
+        try {
+            Python py = Python.getInstance();
+            return py.getModule("main").callAttr("get_media_url", url).toString();
+        } catch (Exception e) {
+            return "";
+        }
     }
 
     private void startDownload(String url, String contentDisposition, String mimeType, String userAgent) {
