@@ -44,7 +44,7 @@
 ## Descargar
 
 <p align="center">
-  <a href="https://github.com/Manolodios/rutascan/releases/download/larptok-v1/larptok-debug.apk">
+  <a href="https://github.com/Manolodios/larptok/raw/main/releases/larptok-debug.apk">
     <img src="https://img.shields.io/badge/%E2%AC%87%20Descargar%20APK-larptok--v1-FF6B6B?style=for-the-badge&logo=android&logoColor=white" alt="Descargar APK" />
   </a>
 </p>
