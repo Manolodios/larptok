@@ -3,7 +3,7 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/Manolodios/rutascan/releases/tag/larptok-v1"><img src="https://img.shields.io/badge/release-larptok--v1-FF6B6B?style=for-the-badge&logo=github&logoColor=white" alt="Release" /></a>
+  <a href="https://github.com/Manolodios/larptok/releases/tag/larptok-v1"><img src="https://img.shields.io/badge/release-larptok--v1-FF6B6B?style=for-the-badge&logo=github&logoColor=white" alt="Release" /></a>
   <img src="https://img.shields.io/badge/Android-8.0%2B-3DDC84?style=for-the-badge&logo=android&logoColor=white" alt="Android 8.0+" />
   <img src="https://img.shields.io/badge/minSdk-26-FF9F43?style=for-the-badge" alt="minSdk 26" />
   <img src="https://img.shields.io/badge/publicidad-0-FF4D6D?style=for-the-badge" alt="0 publicidad" />
@@ -109,7 +109,7 @@ También podés cambiar tu **foto de perfil** desde **Ajustes**: tocá el avatar
 
 ```bash
 git clone https://github.com/Manolodios/larptok.git
-cd rutascan
+cd larptok
 git checkout larptok
 cd android
 
