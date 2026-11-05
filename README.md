@@ -103,21 +103,24 @@ También podés cambiar tu **foto de perfil** desde **Ajustes**: tocá el avatar
 
 ---
 
-## Instagram: usar cookies de sesión
+## Cómo baja larptok
 
-Instagram no entrega el archivo sin una sesión válida. Para habilitarlo:
+1. **Embed público de Instagram** (`/p/<id>/embed/`): sin login y sin cookies,
+   solo para posts públicos. Es el primer intento.
+2. **yt-dlp** (embebido con Chaquopy): respaldo para TikTok, Facebook y el resto.
+3. **WebView** con `shouldInterceptRequest`: último recurso, captura el archivo
+   que la página expone mientras cargás.
 
-1. En tu PC, entrá a `instagram.com` con tu cuenta.
-2. Con la extensión **"Get cookies.txt LOCALLY"** (Chrome o Firefox), exportá las
-   cookies a un archivo `cookies.txt` (formato Netscape).
-3. Pasá ese archivo al teléfono.
-4. En larptok, **Ajustes → Cookies de sesión → Elegir cookies.txt**.
+Si el embed público falla, la app te avisa y podés seguir intentando desde el
+navegador integrado. No hace falta iniciar sesión en ningún lado.
 
-El archivo se guarda en el almacenamiento privado de la app y **nunca se sube a
-ningún servidor**. Con **Quitar cookies** lo borrás.
+### Cookies de sesión (opcional, avanzado)
 
-> Sin cookies, la app sigue funcionando con WebView para TikTok y Facebook.
-> TikTok y Facebook no las necesitan para contenido público.
+Solo si un día Instagram te bloquea el embed público: en la PC iniciás sesión
+en `instagram.com`, exportás las cookies con la extensión **"Get cookies.txt
+LOCALLY"** y las cargás en **Ajustes → Cookies de sesión**. El archivo queda
+en el almacenamiento privado de la app y nunca se sube a un servidor. Con
+**Quitar cookies** lo borrás. Si no cargás nada, la app funciona igual.
 
 ## Cómo compilar
 
