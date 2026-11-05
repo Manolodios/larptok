@@ -52,9 +52,9 @@
 | | |
 |:--|:--|
 | **Versión** | `1.0` · release `larptok-v1` |
-| **Tamaño** | 3.18 MB |
+| **Tamaño** | 33.85 MB |
 | **Android** | 8.0 o superior (API 26+) |
-| **Tipo** | APK de depuración, distribuido directamente (no está en Google Play) |
+| **Tipo** | APK de depuración, distribuido directamente (no está en Google Play). Incluye Python 3.11 + `yt-dlp` embebidos vía Chaquopy. |
 
 ### Instalación en el teléfono
 
