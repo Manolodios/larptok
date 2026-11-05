@@ -34,6 +34,8 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.chaquo.python.Python;
 import com.chaquo.python.PyObject;
 
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.util.Locale;
 
@@ -49,6 +51,8 @@ public class MainActivity extends AppCompatActivity {
     private static final long DUPLICATE_WINDOW_MS = 2000L;
     private static final String PREFS_NAME = "larptok_prefs";
     private static final String PREF_AVATAR_URI = "avatar_uri";
+    private static final String PREF_COOKIES_URI = "cookies_uri";
+    private static final String COOKIES_FILE_NAME = "instagram_cookies.txt";
     private static final String[] SUPPORTED_HOSTS = {
             "instagram.com", "tiktok.com", "facebook.com", "fb.watch"
     };
@@ -86,6 +90,11 @@ public class MainActivity extends AppCompatActivity {
     private TextView actionRemovePhoto;
     private ActivityResultLauncher<String[]> avatarPicker;
     private String avatarUri;
+
+    private TextView tvCookiesHint;
+    private TextView actionRemoveCookies;
+    private ActivityResultLauncher<String[]> cookiePicker;
+    private String cookiesUri;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -165,6 +174,46 @@ public class MainActivity extends AppCompatActivity {
         if (avatarUri != null) {
             loadAvatar(Uri.parse(avatarUri));
         }
+
+        tvCookiesHint = findViewById(R.id.tvCookiesHint);
+        actionRemoveCookies = findViewById(R.id.actionRemoveCookies);
+
+        cookiePicker = registerForActivityResult(
+                new ActivityResultContracts.OpenDocument(),
+                uri -> {
+                    if (uri == null) {
+                        return;
+                    }
+                    if (!copyCookiesToPrivateStorage(uri)) {
+                        tvCookiesHint.setText(R.string.cookies_error);
+                        return;
+                    }
+                    try {
+                        getContentResolver().takePersistableUriPermission(
+                                uri, Intent.FLAG_GRANT_READ_URI_PERMISSION);
+                    } catch (SecurityException ignored) {
+                        // Sin permiso persistente el archivo sigue copiado localmente.
+                    }
+                    cookiesUri = uri.toString();
+                    getSharedPreferences(PREFS_NAME, MODE_PRIVATE)
+                            .edit()
+                            .putString(PREF_COOKIES_URI, cookiesUri)
+                            .apply();
+                    refreshCookiesUi();
+                });
+
+        View.OnClickListener pickCookies = v ->
+                cookiePicker.launch(new String[]{"*/*"});
+        findViewById(R.id.actionPickCookies).setOnClickListener(pickCookies);
+        actionRemoveCookies.setOnClickListener(v -> removeCookies());
+
+        cookiesUri = getSharedPreferences(PREFS_NAME, MODE_PRIVATE)
+                .getString(PREF_COOKIES_URI, null);
+        if (cookiesUri != null) {
+            // Revalidamos el permiso: si expiro, seguimos con el archivo local.
+            copyCookiesToPrivateStorage(Uri.parse(cookiesUri));
+        }
+        refreshCookiesUi();
 
         for (int i = 0; i < tabs.length; i++) {
             final int tab = i;
@@ -370,7 +419,7 @@ public class MainActivity extends AppCompatActivity {
                 return "";
             }
             PyObject module = py.getModule("main");
-            PyObject result = module.callAttr("get_media_url", url);
+            PyObject result = module.callAttr("get_media_url", url, getCookiesLocalPath());
             if (result == null) {
                 return "";
             }
@@ -389,6 +438,52 @@ public class MainActivity extends AppCompatActivity {
         } catch (Throwable ignored) {
             return "";
         }
+    }
+
+    /** Ruta local del cookies.txt, o "" si no hay cookies configuradas. */
+    private String getCookiesLocalPath() {
+        File file = new File(getFilesDir(), COOKIES_FILE_NAME);
+        if (cookiesUri != null && file.isFile() && file.length() > 0) {
+            return file.getAbsolutePath();
+        }
+        return "";
+    }
+
+    /** Copia el archivo elegido al almacenamiento privado de la app. */
+    private boolean copyCookiesToPrivateStorage(Uri uri) {
+        try (InputStream input = getContentResolver().openInputStream(uri);
+             FileOutputStream output = openFileOutput(COOKIES_FILE_NAME, MODE_PRIVATE)) {
+            if (input == null) {
+                return false;
+            }
+            byte[] buffer = new byte[8192];
+            int read;
+            while ((read = input.read(buffer)) != -1) {
+                output.write(buffer, 0, read);
+            }
+            output.flush();
+            File file = new File(getFilesDir(), COOKIES_FILE_NAME);
+            return file.isFile() && file.length() > 0;
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
+    private void refreshCookiesUi() {
+        boolean hasCookies = !getCookiesLocalPath().isEmpty();
+        tvCookiesHint.setText(hasCookies ? R.string.cookies_hint_active : R.string.cookies_hint);
+        actionRemoveCookies.setVisibility(hasCookies ? View.VISIBLE : View.GONE);
+    }
+
+    private void removeCookies() {
+        cookiesUri = null;
+        getSharedPreferences(PREFS_NAME, MODE_PRIVATE)
+                .edit()
+                .remove(PREF_COOKIES_URI)
+                .apply();
+        File file = new File(getFilesDir(), COOKIES_FILE_NAME);
+        file.delete();
+        refreshCookiesUi();
     }
 
     private void startDownload(String url, String contentDisposition, String mimeType, String userAgent) {
