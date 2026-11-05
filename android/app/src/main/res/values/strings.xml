@@ -28,6 +28,12 @@
     <string name="profile_photo_error">No se pudo abrir esa imagen. Probá con otra.</string>
     <string name="profile_photo_content_description">Foto de perfil de larptok</string>
     <string name="profile_photo_placeholder">Agregar foto de perfil</string>
+    <string name="cookies_title">Cookies de sesión (opcional)</string>
+    <string name="cookies_hint">Para Instagram: elegí un archivo cookies.txt exportado con tu sesión. Se guarda solo en el teléfono.</string>
+    <string name="cookies_hint_active">Cookies activas · se usarán para extraer el archivo</string>
+    <string name="cookies_pick">Elegir cookies.txt</string>
+    <string name="cookies_remove">Quitar cookies</string>
+    <string name="cookies_error">No se pudo leer ese archivo. Probá con otro.</string>
     <string name="settings_zero_ads">0 publicidad</string>
     <string name="settings_zero_ads_sub">Sin anuncios, banners ni pop-ups. Nunca.</string>
     <string name="settings_version">Versión 1.0 · larptok</string>
