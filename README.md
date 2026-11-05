@@ -103,6 +103,22 @@ También podés cambiar tu **foto de perfil** desde **Ajustes**: tocá el avatar
 
 ---
 
+## Instagram: usar cookies de sesión
+
+Instagram no entrega el archivo sin una sesión válida. Para habilitarlo:
+
+1. En tu PC, entrá a `instagram.com` con tu cuenta.
+2. Con la extensión **"Get cookies.txt LOCALLY"** (Chrome o Firefox), exportá las
+   cookies a un archivo `cookies.txt` (formato Netscape).
+3. Pasá ese archivo al teléfono.
+4. En larptok, **Ajustes → Cookies de sesión → Elegir cookies.txt**.
+
+El archivo se guarda en el almacenamiento privado de la app y **nunca se sube a
+ningún servidor**. Con **Quitar cookies** lo borrás.
+
+> Sin cookies, la app sigue funcionando con WebView para TikTok y Facebook.
+> TikTok y Facebook no las necesitan para contenido público.
+
 ## Cómo compilar
 
 - **Requisitos:** JDK 17, Android SDK 34, build-tools 35 y **NDK 28.2.13676358** (Chaquopy compila Python para Android).
