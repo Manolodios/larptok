@@ -1,8 +1,14 @@
+import os
+
 from yt_dlp import YoutubeDL
 
 
-def get_media_url(link: str) -> str:
+def get_media_url(link: str, cookie_path: str = "") -> str:
     """Devuelve la URL directa del archivo multimedia de un link publico.
+
+    cookie_path: ruta local a un cookies.txt en formato Netscape. Con cookies
+    de sesion yt-dlp puede alcanzar contenido que exige login (por ejemplo
+    Instagram). Vacio = solo contenido publico.
 
     Retorna '' si no se pudo extraer (link privado, login requerido,
     formato no soportado o error de red).
@@ -16,6 +22,9 @@ def get_media_url(link: str) -> str:
         "skip_download": True,
         "noplaylist": True,
     }
+
+    if cookie_path and os.path.isfile(cookie_path):
+        opts["cookiefile"] = cookie_path
 
     try:
         with YoutubeDL(opts) as ydl:
