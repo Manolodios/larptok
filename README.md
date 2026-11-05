@@ -105,7 +105,7 @@ También podés cambiar tu **foto de perfil** desde **Ajustes**: tocá el avatar
 
 ## Cómo compilar
 
-**Requisitos:** JDK 17, Android SDK 34 y build-tools 35.
+- **Requisitos:** JDK 17, Android SDK 34, build-tools 35 y **NDK 28.2.13676358** (Chaquopy compila Python para Android).
 
 ```bash
 git clone https://github.com/Manolodios/larptok.git
