@@ -62,7 +62,8 @@ public class MainActivity extends AppCompatActivity {
     private static final String PREF_COOKIES_URI = "cookies_uri";
     private static final String COOKIES_FILE_NAME = "instagram_cookies.txt";
     private static final String[] SUPPORTED_HOSTS = {
-            "instagram.com", "tiktok.com", "facebook.com", "fb.watch"
+            "instagram.com", "tiktok.com", "facebook.com", "fb.watch",
+            "x.com", "twitter.com"
     };
 
     private EditText editUrl;
@@ -311,6 +312,12 @@ public class MainActivity extends AppCompatActivity {
                             || host.endsWith("fb.watch")
                             || host.endsWith("facebook.com")
                             || host.endsWith("fbcdn.net")
+                            || host.equals("x.com")
+                            || host.endsWith(".x.com")
+                            || host.equals("twitter.com")
+                            || host.endsWith(".twitter.com")
+                            || host.equals("twimg.com")
+                            || host.endsWith(".twimg.com")
                             || host.contains("instagram")
                             || host.contains("tiktok")
                             || host.contains("facebook");
@@ -328,7 +335,7 @@ public class MainActivity extends AppCompatActivity {
         btnProcesar.setOnClickListener(v -> {
             String url = editUrl.getText().toString().trim();
             if (!isSupportedUrl(url)) {
-                tvEstado.setText("Estado: URL no válida (se requiere instagram.com, tiktok.com, facebook.com o fb.watch)");
+                tvEstado.setText("Estado: URL no válida (se requiere instagram.com, tiktok.com, facebook.com, fb.watch, x.com o twitter.com)");
                 return;
             }
             hideKeyboard();
