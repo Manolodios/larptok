@@ -3,16 +3,16 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/Manolodios/larptok/releases/tag/larptok-v1"><img src="https://img.shields.io/badge/release-larptok--v1-FF6B6B?style=for-the-badge&logo=github&logoColor=white" alt="Release" /></a>
+  <a href="https://github.com/Manolodios/larptok/releases/tag/larptok-v2"><img src="https://img.shields.io/badge/release-larptok--v2-FF6B6B?style=for-the-badge&logo=github&logoColor=white" alt="Release" /></a>
   <img src="https://img.shields.io/badge/Android-8.0%2B-3DDC84?style=for-the-badge&logo=android&logoColor=white" alt="Android 8.0+" />
   <img src="https://img.shields.io/badge/minSdk-26-FF9F43?style=for-the-badge" alt="minSdk 26" />
   <img src="https://img.shields.io/badge/publicidad-0-FF4D6D?style=for-the-badge" alt="0 publicidad" />
-  <img src="https://img.shields.io/badge/tests-97%20OK-2EA043?style=for-the-badge" alt="97 tests OK" />
+  <img src="https://img.shields.io/badge/tests-106%20OK-2EA043?style=for-the-badge" alt="106 tests OK" />
   <img src="https://img.shields.io/badge/licencia-AGPL--3.0-663399?style=for-the-badge" alt="AGPL-3.0" />
 </p>
 
 <h3 align="center">
-  Bajá videos, reels e imágenes públicas de Instagram, TikTok y Facebook.<br />
+  Bajá videos, reels e imágenes públicas de Instagram, TikTok, Facebook y X.<br />
   Sin anuncios, sin cuentas y sin vueltas.
 </h3>
 
@@ -44,14 +44,14 @@
 ## Descargar
 
 <p align="center">
-  <a href="https://github.com/Manolodios/larptok/releases/download/larptok-v1/larptok-debug.apk">
+  <a href="https://github.com/Manolodios/larptok/releases/download/larptok-v2/larptok-debug.apk">
     <img src="https://img.shields.io/badge/%E2%AC%87%20Descargar%20APK-larptok--v1-FF6B6B?style=for-the-badge&logo=android&logoColor=white" alt="Descargar APK" />
   </a>
 </p>
 
 | | |
 |:--|:--|
-| **Versión** | `1.0` · release `larptok-v1` |
+| **Versión** | `1.1` · release `larptok-v2` |
 | **Tamaño** | 33.85 MB |
 | **Android** | 8.0 o superior (API 26+) |
 | **Tipo** | APK de depuración, distribuido directamente (no está en Google Play). Incluye Python 3.11 + `yt-dlp` embebidos vía Chaquopy. |
@@ -72,7 +72,7 @@
 
 | | |
 |:--|:--|
-| 🎬 **Videos y reels** | Links de Instagram, TikTok y Facebook |
+| 🎬 **Videos y reels** | Links de Instagram, TikTok, Facebook y X |
 | 🖼️ **Imágenes e historias** | Posts, historias y portadas de reels |
 | 🚫 **0 publicidad** | Sin anuncios, banners ni pop-ups. Nunca. |
 | 🖤 **Interfaz Mobile 1** | Cinco pestañas con badges, tema oscuro y acentos cálidos |
@@ -106,7 +106,7 @@ También podés cambiar tu **foto de perfil** desde **Ajustes**: tocá el avatar
 ## Cómo baja larptok
 
 1. **yt-dlp embebido** (Chaquopy): intenta resolver el link con extractores para
-   Instagram, TikTok y Facebook. Si cargaste cookies, las usa. Corre en segundo
+   Instagram, TikTok, Facebook y X. Si cargaste cookies, las usa. Corre en segundo
    plano para no bloquear la pantalla.
 2. **Embed público de Instagram** en el WebView: si yt-dlp no puede, la app abre
    `instagram.com/p/<id>/embed/`, deja que el JavaScript de Instagram lo
@@ -115,7 +115,11 @@ También podés cambiar tu **foto de perfil** desde **Ajustes**: tocá el avatar
 3. **Captura de red** (`shouldInterceptRequest`): si el archivo se carga como
    pedido de red mientras la página se renderiza, se descarga al vuelo.
 
-Solo funciona con **contenido público**. Si Instagram muestra un muro de login
+En **X** larptok se queda con el **MP4 progresivo de mayor calidad** que
+expone yt-dlp y descarta los playlists HLS, que DownloadManager no puede
+bajar como un solo archivo.
+
+Solo funciona con **contenido público**. Si X o Instagram muestran un muro de login
 o la publicación es privada, no hay archivo que descargar.
 
 ### Cookies de sesión (opcional, avanzado)
@@ -167,7 +171,7 @@ El proyecto usa pruebas estructurales en Python para verificar el layout, el man
 python -m unittest discover -s tests -p "test_*.py" -v
 ```
 
-**Estado actual:** 97 tests OK.
+**Estado actual:** 106 tests OK.
 
 ---
 
@@ -209,7 +213,7 @@ docs/larptok/                                    # banner y capturas del README
 - La app está pensada para **contenido público**. No descarga contenido privado ni evade inicios de sesión.
 - La descarga depende de lo que exponga cada publicación: algunas plataformas bloquean el WebView, piden login o usan reproductores que no entregan un link directo.
 - Según la plataforma y el tipo de publicación, **el archivo descargado puede incluir marca de agua**.
-- No está afiliada a Instagram, TikTok, Meta ni Facebook.
+- No está afiliada a Instagram, TikTok, Meta, Facebook ni X Corp.
 - Usala de forma personal y respetá los términos de servicio de cada plataforma. Descargar contenido sin autorización puede violar esos términos.
 
 ---
@@ -229,8 +233,7 @@ docs/larptok/                                    # banner y capturas del README
 - [x] Descarga de videos, reels, imágenes e historias
 - [x] Embed público de Instagram renderizado en WebView
 - [x] Cookies de sesión opcionales para Instagram
-- [x] Embed público de Instagram renderizado en WebView
-- [x] Cookies de sesión opcionales para Instagram
+- [x] Descarga de videos públicos de X (Twitter)
 - [x] Foto de perfil en Ajustes
 - [ ] Favoritos
 - [ ] Historial de links procesados
@@ -243,5 +246,5 @@ docs/larptok/                                    # banner y capturas del README
 Este repositorio se distribuye bajo **GNU Affero General Public License v3.0**. Ver [LICENSE](LICENSE).
 
 <p align="center">
-  <sub>Hecho con ☕ y sin anuncios · larptok no está afiliado a Instagram, TikTok ni Meta.</sub>
+  <sub>Hecho con ☕ y sin anuncios · larptok no está afiliado a Instagram, TikTok, Meta ni X Corp.</sub>
 </p>
