@@ -49,6 +49,14 @@ public class MainActivity extends AppCompatActivity {
 
     private static final int REQUEST_STORAGE = 1;
     private static final long DUPLICATE_WINDOW_MS = 2000L;
+    private static final int EMBED_CAPTURE_ATTEMPTS = 8;
+    private static final long EMBED_CAPTURE_DELAY_MS = 1500L;
+    private static final String MOBILE_USER_AGENT =
+            "Mozilla/5.0 (Linux; Android 13; Pixel 7) AppleWebKit/537.36 "
+                    + "(KHTML, like Gecko) Chrome/136.0.0.0 Mobile Safari/537.36";
+    private static final java.util.regex.Pattern INSTAGRAM_POST_PATTERN =
+            java.util.regex.Pattern.compile(
+                    "instagram\\.com/(?:p|reel|tv)/([A-Za-z0-9_-]+)");
     private static final String PREFS_NAME = "larptok_prefs";
     private static final String PREF_AVATAR_URI = "avatar_uri";
     private static final String PREF_COOKIES_URI = "cookies_uri";
@@ -74,6 +82,9 @@ public class MainActivity extends AppCompatActivity {
     private int downloadsCount = 0;
     private boolean historyPending = false;
     private boolean pageLoadFailed = false;
+    private boolean awaitingEmbedCapture = false;
+    private boolean embedCaptureScheduled = false;
+    private int embedCaptureAttempts = 0;
 
     private String lastDownloadUrl;
     private long lastDownloadAt = 0L;
@@ -224,12 +235,17 @@ public class MainActivity extends AppCompatActivity {
         webView.getSettings().setDomStorageEnabled(true);
         webView.getSettings().setAllowFileAccess(false);
         webView.getSettings().setAllowContentAccess(false);
+        webView.getSettings().setUserAgentString(MOBILE_USER_AGENT);
+        webView.getSettings().setMediaPlaybackRequiresUserGesture(false);
         webView.setBackgroundColor(getColor(R.color.surface));
 
         webView.setWebViewClient(new WebViewClient() {
             @Override
             public void onPageStarted(WebView view, String url, Bitmap favicon) {
                 pageLoadFailed = false;
+                if (!awaitingEmbedCapture || url == null || !url.contains("/embed/")) {
+                    awaitingEmbedCapture = false;
+                }
                 tvEstado.setText("Estado: cargando...");
             }
 
@@ -253,7 +269,12 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onPageFinished(WebView view, String url) {
                 if (!pageLoadFailed) {
-                    tvEstado.setText(R.string.status_ready);
+                    tvEstado.setText(awaitingEmbedCapture
+                            ? R.string.status_embed_opening
+                            : R.string.status_ready);
+                }
+                if (awaitingEmbedCapture && !pageLoadFailed) {
+                    scheduleEmbedCapture(EMBED_CAPTURE_DELAY_MS);
                 }
             }
 
@@ -313,23 +334,40 @@ public class MainActivity extends AppCompatActivity {
             hideKeyboard();
             pageLoadFailed = false;
             tvEstado.setText("Estado: buscando archivo...");
+            btnProcesar.setEnabled(false);
 
-            String extracted = getBestQualityUrl(url);
-            if (!extracted.isEmpty()) {
-                startDownload(extracted, null, null, null);
-                markHistoryPending();
-                requestLegacyStoragePermission();
-                return;
-            }
+            // yt-dlp hace red y puede tardar: nunca en el hilo principal.
+            new Thread(() -> {
+                String extracted = getBestQualityUrl(url);
+                runOnUiThread(() -> {
+                    btnProcesar.setEnabled(true);
+                    if (isFinishing() || isDestroyed()) {
+                        return;
+                    }
 
-            if (url.toLowerCase(Locale.ROOT).contains("instagram.com") || url.toLowerCase(Locale.ROOT).contains("instagram")) {
-                tvEstado.setText(R.string.status_instagram_limit);
-            } else {
-                tvEstado.setText("Estado: cargando...");
-            }
-            webView.loadUrl(url);
-            markHistoryPending();
-            requestLegacyStoragePermission();
+                    if (!extracted.isEmpty()) {
+                        startDownload(extracted, null, null, null);
+                        markHistoryPending();
+                        requestLegacyStoragePermission();
+                        return;
+                    }
+
+                    String embedUrl = buildInstagramEmbedUrl(url);
+                    if (!embedUrl.isEmpty()) {
+                        // El embed publico se renderiza sin login y expone el
+                        // archivo cuando el JavaScript termina de cargarlo.
+                        tvEstado.setText(R.string.status_embed_opening);
+                        awaitingEmbedCapture = true;
+                        embedCaptureAttempts = 0;
+                        webView.loadUrl(embedUrl);
+                    } else {
+                        tvEstado.setText("Estado: cargando...");
+                        webView.loadUrl(url);
+                    }
+                    markHistoryPending();
+                    requestLegacyStoragePermission();
+                });
+            }, "larptok-extract").start();
         });
 
         selectTab(TAB_HOME);
@@ -406,6 +444,96 @@ public class MainActivity extends AppCompatActivity {
                 || lower.contains(".jpeg")
                 || lower.contains(".png")
                 || lower.contains(".webp");
+    }
+
+    /**
+     * Convierte un link de Instagram en su embed publico.
+     * Devuelve "" si el link no es un post, reel o video.
+     */
+    private String buildInstagramEmbedUrl(String url) {
+        if (url == null) {
+            return "";
+        }
+        java.util.regex.Matcher matcher = INSTAGRAM_POST_PATTERN.matcher(url);
+        if (!matcher.find()) {
+            return "";
+        }
+        return "https://www.instagram.com/p/" + matcher.group(1) + "/embed/";
+    }
+
+    private void scheduleEmbedCapture(long delayMs) {
+        if (embedCaptureScheduled) {
+            return;
+        }
+        embedCaptureScheduled = true;
+        webView.postDelayed(() -> {
+            embedCaptureScheduled = false;
+            captureMediaFromPage();
+        }, delayMs);
+    }
+
+    /**
+     * Lee el DOM del embed ya renderizado y busca el archivo multimedia.
+     * El HTML inicial es solo JavaScript: la URL aparece despues de cargar.
+     */
+    private void captureMediaFromPage() {
+        if (!awaitingEmbedCapture) {
+            return;
+        }
+        if (embedCaptureAttempts >= EMBED_CAPTURE_ATTEMPTS) {
+            awaitingEmbedCapture = false;
+            tvEstado.setText(R.string.status_embed_not_found);
+            return;
+        }
+        embedCaptureAttempts++;
+
+        String js = "(function(){"
+                + "var m=document.querySelector('meta[property=\"og:video\"],"
+                + "meta[property=\"og:video:secure_url\"]');"
+                + "if(m&&m.content&&m.content.indexOf('http')===0){return m.content;}"
+                + "var v=document.querySelector('video');"
+                + "if(v){"
+                + "if(v.currentSrc&&v.currentSrc.indexOf('http')===0){return v.currentSrc;}"
+                + "if(v.src&&v.src.indexOf('http')===0){return v.src;}"
+                + "var s=v.querySelector('source');"
+                + "if(s&&s.src&&s.src.indexOf('http')===0){return s.src;}"
+                + "return '';"
+                + "}"
+                + "var oi=document.querySelector('meta[property=\"og:image\"]');"
+                + "if(oi&&oi.content&&oi.content.indexOf('http')===0){return oi.content;}"
+                + "var i=document.querySelector('img.EmbeddedMedia,"
+                + "img[src*=\"cdninstagram\"],img[src*=\"fbcdn\"]');"
+                + "if(i&&i.src&&i.src.indexOf('http')===0){return i.src;}"
+                + "return '';})()";
+
+        webView.evaluateJavascript(js, value -> {
+            String media = decodeJsString(value);
+            if (!media.isEmpty() && isMediaUrl(media)) {
+                awaitingEmbedCapture = false;
+                tvEstado.setText("Estado: descargando...");
+                startDownload(media, null, null, null);
+            } else {
+                scheduleEmbedCapture(EMBED_CAPTURE_DELAY_MS);
+            }
+        });
+    }
+
+    /** Convierte el valor JSON que devuelve evaluateJavascript en texto plano. */
+    private String decodeJsString(String value) {
+        if (value == null) {
+            return "";
+        }
+        String trimmed = value.trim();
+        if (trimmed.length() < 2 || !trimmed.startsWith("\"") || !trimmed.endsWith("\"")) {
+            return "";
+        }
+        String body = trimmed.substring(1, trimmed.length() - 1);
+        return body
+                .replace("\\/", "/")
+                .replace("\\u003d", "=")
+                .replace("\\u0026", "&")
+                .replace("\\\"", "\"")
+                .replace("\\\\", "\\");
     }
 
     /**
