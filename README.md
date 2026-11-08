@@ -167,7 +167,7 @@ El proyecto usa pruebas estructurales en Python para verificar el layout, el man
 python -m unittest discover -s tests -p "test_*.py" -v
 ```
 
-**Estado actual:** 95 tests OK.
+**Estado actual:** 97 tests OK.
 
 ---
 
@@ -177,6 +177,7 @@ python -m unittest discover -s tests -p "test_*.py" -v
 android/
 ├── app/src/main/
 │   ├── java/com/descargador/videos/MainActivity.java # UI, WebView, descargas, permisos, avatar
+│   ├── python/main.py                           # extracción con yt-dlp y embed
 │   ├── python/main.py                           # extracción con yt-dlp y embed
 │   ├── res/layout/activity_main.xml             # cinco pestañas, paneles y badges
 │   ├── res/values/                              # colores, strings y tema
@@ -226,6 +227,8 @@ docs/larptok/                                    # banner y capturas del README
 
 - [x] Cinco pestañas con badges y tema oscuro
 - [x] Descarga de videos, reels, imágenes e historias
+- [x] Embed público de Instagram renderizado en WebView
+- [x] Cookies de sesión opcionales para Instagram
 - [x] Embed público de Instagram renderizado en WebView
 - [x] Cookies de sesión opcionales para Instagram
 - [x] Foto de perfil en Ajustes
