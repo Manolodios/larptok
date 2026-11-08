@@ -44,7 +44,7 @@
 ## Descargar
 
 <p align="center">
-  <a href="https://github.com/Manolodios/larptok/raw/main/releases/larptok-debug.apk">
+  <a href="https://github.com/Manolodios/larptok/releases/download/larptok-v1/larptok-debug.apk">
     <img src="https://img.shields.io/badge/%E2%AC%87%20Descargar%20APK-larptok--v1-FF6B6B?style=for-the-badge&logo=android&logoColor=white" alt="Descargar APK" />
   </a>
 </p>
@@ -105,14 +105,18 @@ También podés cambiar tu **foto de perfil** desde **Ajustes**: tocá el avatar
 
 ## Cómo baja larptok
 
-1. **Embed público de Instagram** (`/p/<id>/embed/`): sin login y sin cookies,
-   solo para posts públicos. Es el primer intento.
-2. **yt-dlp** (embebido con Chaquopy): respaldo para TikTok, Facebook y el resto.
-3. **WebView** con `shouldInterceptRequest`: último recurso, captura el archivo
-   que la página expone mientras cargás.
+1. **yt-dlp embebido** (Chaquopy): intenta resolver el link con extractores para
+   Instagram, TikTok y Facebook. Si cargaste cookies, las usa. Corre en segundo
+   plano para no bloquear la pantalla.
+2. **Embed público de Instagram** en el WebView: si yt-dlp no puede, la app abre
+   `instagram.com/p/<id>/embed/`, deja que el JavaScript de Instagram lo
+   renderice y lee la URL del archivo del DOM (`<video>`, `og:video` o la imagen
+   del CDN). No pide login.
+3. **Captura de red** (`shouldInterceptRequest`): si el archivo se carga como
+   pedido de red mientras la página se renderiza, se descarga al vuelo.
 
-Si el embed público falla, la app te avisa y podés seguir intentando desde el
-navegador integrado. No hace falta iniciar sesión en ningún lado.
+Solo funciona con **contenido público**. Si Instagram muestra un muro de login
+o la publicación es privada, no hay archivo que descargar.
 
 ### Cookies de sesión (opcional, avanzado)
 
@@ -163,7 +167,7 @@ El proyecto usa pruebas estructurales en Python para verificar el layout, el man
 python -m unittest discover -s tests -p "test_*.py" -v
 ```
 
-**Estado actual:** 68 tests OK.
+**Estado actual:** 95 tests OK.
 
 ---
 
@@ -172,7 +176,8 @@ python -m unittest discover -s tests -p "test_*.py" -v
 ```text
 android/
 ├── app/src/main/
-│   ├── java/com/descargador/MainActivity.java   # UI, WebView, descargas, permisos, avatar
+│   ├── java/com/descargador/videos/MainActivity.java # UI, WebView, descargas, permisos, avatar
+│   ├── python/main.py                           # extracción con yt-dlp y embed
 │   ├── res/layout/activity_main.xml             # cinco pestañas, paneles y badges
 │   ├── res/values/                              # colores, strings y tema
 │   ├── res/drawable/                            # iconos y fondos
@@ -191,7 +196,8 @@ docs/larptok/                                    # banner y capturas del README
 - **Java 17** + Android nativo (AppCompat)
 - `WebView` para la publicación pública
 - `DownloadManager` para las descargas
-- **Gradle 9.3.1** + **AGP 9.1.0**
+- **Gradle 8.9** + **AGP 8.7.3** + **Chaquopy 16.1.0**
+- **Python 3.11** embebido + `yt-dlp`
 - `minSdk 26` · `targetSdk 33` · `compileSdk 34`
 - **Python `unittest`** para las pruebas estructurales
 
@@ -220,6 +226,8 @@ docs/larptok/                                    # banner y capturas del README
 
 - [x] Cinco pestañas con badges y tema oscuro
 - [x] Descarga de videos, reels, imágenes e historias
+- [x] Embed público de Instagram renderizado en WebView
+- [x] Cookies de sesión opcionales para Instagram
 - [x] Foto de perfil en Ajustes
 - [ ] Favoritos
 - [ ] Historial de links procesados
