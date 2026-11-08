@@ -7,7 +7,7 @@
   <img src="https://img.shields.io/badge/Android-8.0%2B-3DDC84?style=for-the-badge&logo=android&logoColor=white" alt="Android 8.0+" />
   <img src="https://img.shields.io/badge/minSdk-26-FF9F43?style=for-the-badge" alt="minSdk 26" />
   <img src="https://img.shields.io/badge/publicidad-0-FF4D6D?style=for-the-badge" alt="0 publicidad" />
-  <img src="https://img.shields.io/badge/tests-68%20OK-2EA043?style=for-the-badge" alt="68 tests OK" />
+  <img src="https://img.shields.io/badge/tests-97%20OK-2EA043?style=for-the-badge" alt="97 tests OK" />
   <img src="https://img.shields.io/badge/licencia-AGPL--3.0-663399?style=for-the-badge" alt="AGPL-3.0" />
 </p>
 
