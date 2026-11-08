@@ -78,6 +78,33 @@ def fetch_embed_html(url: str) -> str:
         return ""
 
 
+def _is_hls(url: str) -> bool:
+    return ".m3u8" in (url or "").lower()
+
+
+def _pick_best_format(formats) -> str:
+    """Elige el mejor archivo progresivo, nunca un playlist HLS.
+
+    DownloadManager no puede descargar un .m3u8 como si fuera un video:
+    bajaría la lista de segmentos, no la película.
+    """
+    best = None
+    best_key = None
+    for fmt in formats:
+        if not isinstance(fmt, dict):
+            continue
+        url = fmt.get("url")
+        if not url or not url.startswith("http") or _is_hls(url):
+            continue
+        if fmt.get("vcodec") == "none":
+            continue
+        key = (fmt.get("height") or 0, fmt.get("tbr") or 0)
+        if best_key is None or key > best_key:
+            best_key = key
+            best = fmt
+    return best["url"] if best else ""
+
+
 def get_media_url(link: str, cookie_path: str = "") -> str:
     """Devuelve la URL directa del archivo multimedia de un link publico.
 
@@ -133,13 +160,13 @@ def get_media_url(link: str, cookie_path: str = "") -> str:
         return ""
 
     url = info.get("url")
-    if url:
+    if url and not _is_hls(url):
         return url
 
-    # Fallback: ultimo formato de la lista (suele ser la mejor calidad).
-    formats = info.get("formats") or []
-    for fmt in reversed(formats):
-        if isinstance(fmt, dict) and fmt.get("url"):
-            return fmt["url"]
+    # yt-dlp suele devolver el archivo en formats, no en url (por ejemplo X).
+    # Hay que elegir el MP4 progresivo de mayor calidad y descartar los HLS.
+    best = _pick_best_format(info.get("formats") or [])
+    if best:
+        return best
 
     return ""
