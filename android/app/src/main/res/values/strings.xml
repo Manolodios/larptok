@@ -12,6 +12,8 @@
     <string name="hint_url">https://www.instagram.com/reel/…</string>
     <string name="action_procesar">Procesar link</string>
     <string name="status_ready">Listo · 0 publicidad — descarga en calidad original</string>
+    <string name="status_embed_opening">Estado: abriendo la publicación... si no aparece, probala desde el navegador.</string>
+    <string name="status_embed_not_found">No se encontró el archivo. Probá abrir la publicación en el navegador y tocar el video.</string>
     <string name="empty_downloads">Todavía no hay descargas</string>
     <string name="empty_downloads_sub">Los videos e imágenes que descargues van a aparecer acá.</string>
     <string name="downloads_summary">%1$d descargas iniciadas</string>
