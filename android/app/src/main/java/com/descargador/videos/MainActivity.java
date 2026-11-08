@@ -314,8 +314,8 @@ public class MainActivity extends AppCompatActivity {
                             || host.contains("instagram")
                             || host.contains("tiktok")
                             || host.contains("facebook");
-                    if (isResourceHost && isMediaUrl(url)) {
-                        startDownload(url, null, null, null);
+                    if (isResourceHost && isMediaUrl(url) && !isLikelyThumbnail(url)) {
+                        view.post(() -> startDownload(url, null, null, null));
                     }
                 }
                 return super.shouldInterceptRequest(view, request);
@@ -444,6 +444,15 @@ public class MainActivity extends AppCompatActivity {
                 || lower.contains(".jpeg")
                 || lower.contains(".png")
                 || lower.contains(".webp");
+    }
+
+    /** Descarta fotos de perfil y miniaturas que no son el archivo pedido. */
+    private boolean isLikelyThumbnail(String url) {
+        String lower = url.toLowerCase(Locale.ROOT);
+        return lower.contains("t51.2885-19")
+                || lower.contains("s150x150")
+                || lower.contains("s320x320")
+                || lower.contains("/s100x100/");
     }
 
     /**
