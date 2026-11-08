@@ -76,6 +76,19 @@ class TestTask12EmbedWebView(unittest.TestCase):
         self.assertIn("btnProcesar.setEnabled(true)", button,
                       "El boton debe reactivarse al terminar")
 
+    def test_interception_returns_to_ui_thread(self):
+        java = read(JAVA_PATH)
+        block = java[java.index("shouldInterceptRequest"):java.index("setDownloadListener")]
+        self.assertIn("view.post", block,
+                      "shouldInterceptRequest corre fuera del hilo de la interfaz")
+
+    def test_skips_instagram_thumbnails(self):
+        java = read(JAVA_PATH)
+        self.assertIn("isLikelyThumbnail", java,
+                      "No hay que descargar fotos de perfil ni miniaturas")
+        self.assertIn("t51.2885-19", java,
+                      "Falta excluir las fotos de perfil del CDN de Instagram")
+
 
 if __name__ == "__main__":
     unittest.main()
