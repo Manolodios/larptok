@@ -72,7 +72,7 @@ def fetch_embed_html(url: str) -> str:
         headers={"User-Agent": MOBILE_UA, "Accept-Language": "es-AR,es;q=0.9,en;q=0.8"},
     )
     try:
-        with urllib.request.urlopen(request, timeout=30) as response:
+        with urllib.request.urlopen(request, timeout=12) as response:
             return response.read().decode("utf-8", "replace")
     except Exception:
         return ""
@@ -104,6 +104,7 @@ def get_media_url(link: str, cookie_path: str = "") -> str:
         "no_warnings": True,
         "skip_download": True,
         "noplaylist": True,
+        "socket_timeout": 15,
     }
 
     if cookie_path and os.path.isfile(cookie_path):
