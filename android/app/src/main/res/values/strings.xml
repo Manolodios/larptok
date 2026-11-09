@@ -38,7 +38,7 @@
     <string name="cookies_error">No se pudo leer ese archivo. Probá con otro.</string>
     <string name="settings_zero_ads">0 publicidad</string>
     <string name="settings_zero_ads_sub">Sin anuncios, banners ni pop-ups. Nunca.</string>
-    <string name="settings_version">Versión 1.1 · larptok</string>
+    <string name="settings_version">Versión 2.0 · larptok</string>
     <string name="status_instagram_limit">No se pudo obtener el archivo de esa publicación. Probá con Facebook, TikTok, X o un link público.</string>
     <string name="settings_warning">Usá la app solo para contenido público y de forma personal. Según la plataforma y el tipo de publicación, el archivo descargado puede incluir marca de agua. Descargar contenido sin autorización viola los términos de servicio de las plataformas.</string>
 </resources>
