@@ -81,13 +81,13 @@ class TestTask13XSupport(unittest.TestCase):
 
     def test_version_bumped_for_x_support(self):
         gradle = read("android/app/build.gradle")
-        self.assertIn("versionCode 2", gradle,
-                      "La version nueva debe tener versionCode 2")
-        self.assertIn('versionName "1.1"', gradle,
-                      "La version nueva debe llamarse 1.1")
+        self.assertIn("versionCode 3", gradle,
+                      "larptok 2.0 debe tener versionCode 3")
+        self.assertIn('versionName "2.0"', gradle,
+                      "La version debe llamarse 2.0")
         strings = read(STRINGS_PATH)
-        self.assertIn("Versión 1.1", strings,
-                      "Ajustes debe mostrar la version nueva")
+        self.assertIn("Versión 2.0", strings,
+                      "Ajustes debe mostrar larptok 2.0")
 
 
 if __name__ == "__main__":
